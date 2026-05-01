@@ -29,9 +29,12 @@ public:
     void loadFromFile(const std::string& filePath);
 
 private:
+    int getSpacesMoved() const;
+    int getMoveStep() const;
     void moveTo(int newX, int newY);
     void recordPosition();
 
+    static const int upgradeThreshold = 10;
     static const int gridSize = 5;
     std::string name_;
     int x = 2;
