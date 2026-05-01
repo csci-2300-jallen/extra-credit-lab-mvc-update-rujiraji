@@ -1,5 +1,6 @@
 #include "model/Robot.h"
 
+#include <cstdlib>
 #include <fstream>
 
 Robot::Robot(const std::string& name)
@@ -26,19 +27,19 @@ const std::vector<Point2D>& Robot::getHistory() const {
 }
 
 void Robot::moveUp() {
-    moveTo(x, y - 1);
+    moveTo(x, y - getMoveStep());
 }
 
 void Robot::moveDown() {
-    moveTo(x, y + 1);
+    moveTo(x, y + getMoveStep());
 }
 
 void Robot::moveLeft() {
-    moveTo(x - 1, y);
+    moveTo(x - getMoveStep(), y);
 }
 
 void Robot::moveRight() {
-    moveTo(x + 1, y);
+    moveTo(x + getMoveStep(), y);
 }
 
 void Robot::undo() {
@@ -101,6 +102,21 @@ void Robot::loadFromFile(const std::string& filePath) {
     name_ = loadedName;
     history = loadedHistory;
     currentHistoryIndex = loadedIndex;
+}
+
+int Robot::getSpacesMoved() const {
+    int spacesMoved = 0;
+
+    for (int index = 1; index <= currentHistoryIndex; index++) {
+        spacesMoved += std::abs(history[index].x - history[index - 1].x);
+        spacesMoved += std::abs(history[index].y - history[index - 1].y);
+    }
+
+    return spacesMoved;
+}
+
+int Robot::getMoveStep() const {
+    return getSpacesMoved() >= upgradeThreshold ? 2 : 1;
 }
 
 void Robot::moveTo(int newX, int newY) {
